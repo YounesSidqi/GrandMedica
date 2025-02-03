@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GrandMedica</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Link Font Awesome untuk ikon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body class="bg-white">
+@extends('layout.app')
+@include('layout.nav_admin')
+
+@section('main')
 
   <!-- Icon Back dan Logo -->
   <div class="w-full flex justify-between items-center pt-6 px-4">
@@ -60,6 +53,23 @@
           </label>
           <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nama_obat" name="nama_obat" type="text" value="{{ $item ? $item->nama_obat : ''}}">
         </div>
+
+        <!-- Unit -->
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="unit">
+            Unit :
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="unit" name="unit" type="text" value="{{ $item ? $item->unit : ''}}">
+        </div>
+
+        <!-- Expired -->
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="exp">
+            Expired :
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="exp" name="exp" type="text" value="{{ $item ? $item->exp : ''}}">
+        </div>
+
         <!-- Qty -->
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="qty">
@@ -81,5 +91,4 @@
     </div>
   </div>
 
-</body>
-</html>
+  @endsection

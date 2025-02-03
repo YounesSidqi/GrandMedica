@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('screenopname', function (Blueprint $table) {
             $table->id();
-            $table->integer('no_seri');
+            $table->string('no_seri');
             $table->string('nama_obat');
+            $table->string('unit');
+            $table->string('exp');
             $table->integer('qty');
-            $table->integer('stok_masuk')->default(0);
-            $table->integer('stok_keluar')->default(0);
+            $table->integer('pemasukan')->default(0);
+            $table->integer('pengeluaran')->default(0);
             $table->timestamps();
         });
     }

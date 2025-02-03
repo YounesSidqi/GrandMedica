@@ -27,7 +27,7 @@ class AuthController extends Controller
     // Coba login dengan kredensial
     if (Auth::attempt($credentials)) {
         // Login berhasil
-        return redirect('/');
+        return redirect('/admin_dashboard/screen_opname');
     } else {
         // Login gagal
         return redirect('/sign-in')->withErrors('Email dan password yang dimasukkan tidak sesuai')->withInput();

@@ -67,11 +67,27 @@
     
         <!-- Harga Tender -->
         <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="harga_Tender">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="harga_Tender1">
                 Harga Tender :
             </label>
-            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="harga_Tender" name="harga_Tender" type="text" placeholder="Input Harga Tender disini" value="{{$item->harga_Tender}}">
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="harga_Tender1" name="harga_Tender1" type="text" placeholder="Input Harga Tender disini" value="{{$item->harga_Tender1}}">
         </div>
+        
+        <!-- Harga Tender -->
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="harga_Tender2">
+              Harga Tender :
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="harga_Tender2" name="harga_Tender2" type="text" placeholder="Input Harga Tender disini" value="{{$item->harga_Tender2}}">
+      </div>
+
+      <!-- Harga Tender -->
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="harga_Tender3">
+            Harga Tender :
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="harga_Tender3" name="harga_Tender3" type="text" placeholder="Input Harga Tender disini" value="{{$item->harga_Tender3}}">
+    </div>
     
         <!-- Tombol Simpan Harga -->
         <div class="flex items-center justify-center">

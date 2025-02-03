@@ -55,16 +55,16 @@
           <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="total_qty" type="text" name="total_qty" readonly value="{{$item->qty}}">
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="stok_keluar">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="pengeluaran">
             Stok yang keluar :
           </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="stok_keluar" type="number" name="stok_keluar" placeholder="Input jumlah stok yang keluar" required>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="pengeluaran" type="number" name="pengeluaran" placeholder="Input jumlah stok yang keluar" required>
         </div>
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="Jumlah_qty">
             Stok yang sudah keluar :
           </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="Jumlah_qty" type="text" name="Jumlah_qty" readonly value="{{$item->stok_keluar}}">
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="Jumlah_qty" type="text" name="Jumlah_qty" readonly value="{{$item->pengeluaran}}">
         </div>
         <div class="flex items-center justify-center">
           <button class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">

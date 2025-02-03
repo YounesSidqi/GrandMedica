@@ -1,15 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GrandMedica</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Link Font Awesome untuk ikon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-</head>
-<body class="bg-white">
+@extends('layout.app')
+@include('layout.nav_admin')
+
+@section('main')
 
   <!-- Icon Back dan Logo -->
   <div class="w-full flex justify-between items-center pt-6 px-4">
@@ -59,6 +51,18 @@
           <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="nama_obat" type="text" name="nama_obat" id="input" placeholder="Input nama obat disini" value="{{old('nama_obat')}}">
         </div>
         <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="unit">
+            Unit :
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="unit" type="text" name="unit" id="input" placeholder="Input unit disini" value="{{old('unit')}}">
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="exp">
+            Expired :
+          </label>
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="exp" type="text" name="exp" id="input" placeholder="Input exp disini" value="{{old('exp')}}">
+        </div>
+        <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="qty">
             Qty :
           </label>
@@ -72,6 +76,5 @@
       </form>
     </div>
   </div>
-  <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
-</body>
-</html>
+
+@endsection

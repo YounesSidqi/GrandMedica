@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kasir;
 use App\Models\PriceList;
 use App\Models\ScreenOpname;
 use Illuminate\Http\Request;
@@ -37,13 +38,16 @@ class ScreenopnameController extends Controller
     public function store(Request $request)
 {
     $request->validate([
-        'no_seri' => 'required|integer',
+        'no_seri' => 'required',
         'nama_obat' => 'required',
+        'unit' => 'required',
+        'exp' => 'required',
         'qty' => 'required|integer'
     ], [ 
         'no_seri.required' => 'No seri wajib diisi',
-        'no_seri.integer' => 'No seri harus berupa angka',
         'nama_obat.required' => 'Nama obat wajib diisi',
+        'unit.required' => 'Unit wajib diisi',
+        'exp.required' => 'Expired wajib diisi',
         'qty.required' => 'Qty wajib diisi',
         'qty.integer' => 'Qty harus berupa angka'
     ]);
@@ -52,6 +56,8 @@ class ScreenopnameController extends Controller
     $data = [
         'no_seri' => $request->input('no_seri'),
         'nama_obat' => $request->input('nama_obat'),
+        'unit' => $request->input('unit'),
+        'exp' => $request->input('exp'),
         'qty' => $request->input('qty')
     ];
 
@@ -59,10 +65,26 @@ class ScreenopnameController extends Controller
 
     // Simpan data ke tabel daftar_harga dengan default harga
     PriceList::create([
+        'no_seri' => $request->input('no_seri'),
         'nama_obat' => $request->input('nama_obat'),
-        'harga_Umum' => 0,
+        'harga_Umum' => 0, 
         'harga_BPJS' => 0,
-        'harga_Tender' => 0
+        'harga_Tender1' => 0,
+        'harga_Tender2' => 0,
+        'harga_Tender3' => 0
+    ]);
+
+     // Simpan data ke tabel daftar_harga dengan default harga
+    Kasir::create([
+        'no_seri' => $request->input('no_seri'),
+        'nama_obat' => $request->input('nama_obat'),
+        'exp' => $request->input('exp'),
+        'qty' => $request->input('qty'),
+        'harga_Umum' => $request->input('harga_Umum', 0), 
+        'harga_BPJS' => $request->input('harga_BPJS', 0), 
+        'harga_Tender1' => $request->input('harga_Tender1', 0), 
+        'harga_Tender2' => $request->input('harga_Tender2', 0), 
+        'harga_Tender3' => $request->input('harga_Tender3', 0)
     ]);
 
     return redirect()->route('screenopname.home')->with('success', 'Data berhasil disimpan');
@@ -92,15 +114,18 @@ class ScreenopnameController extends Controller
 {
     // Validasi input
     $request->validate([
-        'no_seri' => 'required|integer',
+        'no_seri' => 'required',
         'nama_obat' => 'required',
+        'unit' => 'required',
+        'exp' => 'required',
         'qty' => 'required|integer'
-    ], [
+    ], [ 
         'no_seri.required' => 'No seri wajib diisi',
-        'no_seri.integer' => 'Quantity harus beruba nomer',
         'nama_obat.required' => 'Nama obat wajib diisi',
-        'qty.required' => 'Quantity wajib diisi',
-        'qty.integer' => 'Quantity harus beruba nomer'
+        'unit.required' => 'Unit wajib diisi',
+        'exp.required' => 'Expired wajib diisi',
+        'qty.required' => 'Qty wajib diisi',
+        'qty.integer' => 'Qty harus berupa angka'
     ]);
 
     // Ambil data item dari screen_opname
@@ -109,13 +134,40 @@ class ScreenopnameController extends Controller
     // Simpan nama obat lama untuk referensi
     $oldNamaObat = $item->nama_obat;
 
+    // Simpan nama obat lama untuk referensi
+    $oldNoSeri = $item->no_seri;
+
+    // Simpan nama obat lama untuk referensi
+    $oldQty = $item->qty;
+
+    // Simpan nama obat lama untuk referensi
+    $oldExp = $item->exp;
+
     // Update data di tabel screen_opname
-    $data = $request->only(['no_seri', 'nama_obat', 'qty']);
+    $data = $request->only(['no_seri', 'nama_obat', 'unit', 'exp', 'qty']);
     $item->update($data);
 
-    // Jika nama obat berubah, update juga di tabel daftar_harga
-    if ($oldNamaObat !== $data['nama_obat']) {
-        PriceList::where('nama_obat', $oldNamaObat)->update(['nama_obat' => $data['nama_obat']]);
+   // Jika nama_obat, no_seri, atau harga_umum berubah, update juga di tabel pricelist
+    if ($oldNamaObat !== $data['nama_obat'] || $oldNoSeri !== $data['no_seri']) {
+        PriceList::where('nama_obat', $oldNamaObat)
+            ->where('no_seri', $oldNoSeri)
+            ->update([
+                'nama_obat' => $data['nama_obat'],
+                'no_seri' => $data['no_seri'],
+            ]);
+    }
+
+    // Jika nama_obat, no_seri, atau harga_umum berubah, update juga di tabel pricelist
+    if ($oldNamaObat !== $data['nama_obat'] || $oldNoSeri !== $data['no_seri'] || $oldExp!== $data['exp']) {
+        Kasir::where('nama_obat', $oldNamaObat)
+            ->where('no_seri', $oldNoSeri)
+            ->where('exp', $oldExp)
+            ->update([
+                'nama_obat' => $data['nama_obat'],
+                'no_seri' => $data['no_seri'],
+                'qty' => $data['qty'],
+                'exp' => $data['exp'],
+            ]);
     }
 
     return redirect()->route('screenopname.home')->with('success', 'Berhasil mengubah data');
@@ -132,24 +184,28 @@ public function tambahStok(Request $request, $id)
 {
     // Validasi input
     $request->validate([
-        'stok_masuk' => 'required|integer|min:1',
+        'pemasukan' => 'required|integer|min:1',
     ], [
-        'stok_masuk.required' => 'Stok masuk wajib diisi',
-        'stok_masuk.integer' => 'Stok masuk harus berupa angka',
+        'pemasukan.required' => 'Stok masuk wajib diisi',
+        'pemasukan.integer' => 'Stok masuk harus berupa angka',
     ]);
 
     // Ambil data item berdasarkan ID
     $item = ScreenOpname::findOrFail($id);
 
     // Tambahkan stok yang masuk ke stok yang ada
-    $item->qty += $request->stok_masuk;
-    $item->stok_masuk += $request->stok_masuk;
-
-    // Update stok keluar jika diperlukan (optional, tergantung logika)
-    $item->stok_keluar = $request->stok_keluar ?? $item->stok_keluar;
-
+    $item->qty += $request->pemasukan;
+    $item->pemasukan += $request->pemasukan;
+    
     // Simpan perubahan ke database
     $item->save();
+
+    // Perbarui qty di tabel Kasir
+    $kasir = Kasir::where('no_seri', $item->no_seri)->where('nama_obat', $item->nama_obat)->first();
+    if ($kasir) {
+        $kasir->qty += $request->pemasukan; // Tambahkan qty yang sama di kasir
+        $kasir->save();
+    }
 
     // Redirect dengan pesan sukses
     return redirect()->route('screenopname.home')->with('success', 'Berhasil mengupdate stok');
@@ -164,10 +220,10 @@ public function stokKeluar(Request $request, $id)
 {
     // Validasi input
     $request->validate([
-        'stok_keluar' => 'required|integer|min:1',
+        'pengeluaran' => 'required|integer|min:1',
     ], [
-        'stok_keluar.required' => 'Stok keluar wajib diisi',
-        'stok_keluar.integer' => 'Stok keluar harus berupa angka',
+        'pengeluaran.required' => 'Stok keluar wajib diisi',
+        'pengeluaran.integer' => 'Stok keluar harus berupa angka',
     ]);
 
     // Ambil data item berdasarkan ID
@@ -179,49 +235,27 @@ public function stokKeluar(Request $request, $id)
     }
 
     // Cek apakah stok mencukupi
-    if ($item->qty < $request->stok_keluar) {
+    if ($item->qty < $request->pengeluaran) {
         return redirect()->route('screenopname.home')->with('error', 'Stok tidak mencukupi untuk dikurangi.');
     }
 
     // Kurangi stok yang ada
-    $item->qty -= $request->stok_keluar;
+    $item->qty -= $request->pengeluaran;
 
     // Tambahkan stok keluar
-    $item->stok_keluar += $request->stok_keluar;
+    $item->pengeluaran += $request->pengeluaran;
 
     // Simpan perubahan ke database
     $item->save();
 
+    // Kurangi qty di tabel kasir berdasarkan no_seri
+    Kasir::where('no_seri', $item->no_seri)
+        ->where('exp', $item->exp) // Pastikan exp juga sama agar update akurat
+        ->decrement('qty', $request->pengeluaran);
+
     // Redirect dengan pesan sukses
     return redirect()->route('screenopname.home')->with('success', 'Berhasil mengurangi stok.');
 }
-
-
-
-
-
-    // $validated = $request->validate([
-    //     'tambah_stok' => 'required|integer|min:1'
-    // ]);
-
-    // // Ambil item berdasarkan ID
-    // $item = ScreenOpname::findOrFail($id);
-
-    // // Tambah stok ke qty dan stok masuk
-    // $item->qty += $validated['tambah_stok'];
-    // $item->stok_masuk += $validated['tambah_stok'];
-
-    // // Simpan perubahan
-    // $item->save();
-
-    // // Redirect ke halaman screenopname.addstok setelah stok berhasil ditambah
-    // return redirect()->route('screenopname.addstok')->with('success', 'Stok berhasil ditambah!');
-
-
-
-    
-
-
     /**
      * Remove the specified resource from storage.
      */
@@ -239,98 +273,10 @@ public function stokKeluar(Request $request, $id)
     // Hapus item dari tabel daftar_harga yang memiliki nama obat yang sama
     PriceList::where('nama_obat', $namaObat)->delete();
 
+    // Hapus item dari tabel daftar_harga yang memiliki nama obat yang sama
+    Kasir::where('nama_obat', $namaObat)->delete();
+
     return redirect()->route('screenopname.home')->with('success', 'Data berhasil dihapus');
 }
 
-public function getChartData(Request $request)
-{
-    // Data Dummy Mingguan
-    $weeklyData = [];
-    for ($month = 1; $month <= 12; $month++) {
-        $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $month, 2025);
-        $weeksInMonth = ceil($daysInMonth / 7);
-
-        for ($week = 1; $week <= $weeksInMonth; $week++) {
-            $startDay = ($week - 1) * 7 + 1;
-            $endDay = min($startDay + 6, $daysInMonth);
-
-            // Data untuk minggu tersebut
-            $weekData = [];
-            for ($day = $startDay; $day <= $endDay; $day++) {
-                $weekData[] = (object) [
-                    'date' => sprintf('2025-%02d-%02d', $month, $day),
-                    'total_in' => rand(100, 300),
-                    'total_out' => rand(50, 200),
-                ];
-            }
-
-            $weeklyData[] = (object) [
-                'week' => $week,
-                'month' => sprintf('%04d-%02d', 2025, $month),
-                'start_date' => sprintf('2025-%02d-%02d', $month, $startDay),
-                'end_date' => sprintf('2025-%02d-%02d', $month, $endDay),
-                'data' => $weekData,
-            ];
-        }
-    }
-
-    // Data Dummy Bulanan
-    $monthlyData = [];
-    for ($month = 1; $month <= 12; $month++) {
-        $monthlyData[] = (object) [
-            'month' => sprintf('%04d-%02d', 2025, $month),
-            'total_in' => rand(1000, 3000),
-            'total_out' => rand(800, 2500),
-        ];
-    }
-
-    // Return ke view dengan data dummy
-    return view('admin_dashboard.chart.index', [
-        'weeklyData' => collect($weeklyData),
-        'monthlyData' => collect($monthlyData),
-        'message' => null,
-    ]);
 }
-
-
-
-
-}
-
- // // Data Mingguan
-    // $weeklyData = ScreenOpname::selectRaw('
-    //     YEARWEEK(created_at) as week, 
-    //     DATE_FORMAT(created_at, "%Y-%m") as month,
-    //     DATE_FORMAT(MIN(created_at), "%a, %d %b %Y") as start_date, 
-    //     DATE_FORMAT(MAX(created_at), "%a, %d %b %Y") as end_date, 
-    //     SUM(stok_masuk) as total_in, 
-    //     SUM(stok_keluar) as total_out
-    // ')
-    // ->groupBy('week', 'month')
-    // ->orderBy('week', 'asc')
-    // ->get();
-
-    // // Data Bulanan
-    // $monthlyData = ScreenOpname::selectRaw('
-    //     DATE_FORMAT(created_at, "%Y-%m") as month, 
-    //     DATE_FORMAT(MIN(created_at), "%d %b %Y") as start_date, 
-    //     DATE_FORMAT(MAX(created_at), "%d %b %Y") as end_date, 
-    //     CAST(SUM(stok_masuk) AS UNSIGNED) as total_in, 
-    //     CAST(SUM(stok_keluar) AS UNSIGNED) as total_out
-    // ')
-    // ->groupBy('month')
-    // ->orderBy('month', 'asc')
-    // ->get();
-
-    // // Pengecekan Data Kosong
-    // $message = null;
-    // if ($weeklyData->isEmpty() && $monthlyData->isEmpty()) {
-    //     $message = 'Data tidak tersedia untuk periode yang diminta.';
-    // }
-
-    // // Return ke View dengan Data
-    // return view('admin_dashboard.chart.index', [
-    //     'weeklyData' => $weeklyData,
-    //     'monthlyData' => $monthlyData,
-    //     'message' => $message
-    // ]);

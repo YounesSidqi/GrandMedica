@@ -9,5 +9,5 @@ class ScreenOpname extends Model
 {
     use HasFactory;
     protected $table = "screenopname";
-    protected $fillable = ["no_seri", "nama_obat", "qty"];
+    protected $fillable = ["no_seri", "nama_obat", "unit", "exp", "qty"];
 }

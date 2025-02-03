@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pricelist', function (Blueprint $table) {
+        Schema::create('kasir', function (Blueprint $table) {
             $table->id();
             $table->string('no_seri');
             $table->string('nama_obat');
-            $table->integer('harga_Umum')->default(0);;
-            $table->integer('harga_BPJS')->default(0);;
-            $table->integer('harga_Tender1')->default(0);;
-            $table->integer('harga_Tender2')->default(0);;
-            $table->integer('harga_Tender3')->default(0);;
+            $table->string('exp');
+            $table->integer('qty');
+            $table->integer('harga_Umum');
+            $table->integer('harga_BPJS');
+            $table->integer('harga_Tender1');
+            $table->integer('harga_Tender2');
+            $table->integer('harga_Tender3');
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pricelist');
+        //
     }
 };

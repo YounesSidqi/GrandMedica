@@ -3,8 +3,10 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChartsController;
+use App\Http\Controllers\KasirController;
 use App\Http\Controllers\PricelistController;
 use App\Http\Controllers\ScreenopnameController;
+use App\Models\ScreenOpname;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,6 +39,10 @@ Route::get('/admin_dashboard/screen_opname/tambah_stok/{id}',
 //route Out Stock
 Route::get('/admin_dashboard/screen_opname/pengeluaran_stok/{id}',
 [ScreenopnameController::class, 'pageStokPengeluaran'])->name('screenopname.pagestokpengeluaran');
+//route chart
+Route::get('/admin_dashboard/screen_opname/chart-data/{id}', [ScreenopnameController::class, 'getChartData'])->name('screenopname.chartData');
+Route::get('/admin_dashboard/screen_opname/chart-data/chart-detail/{month}', [ScreenopnameController::class, 'showChartDetail'])->name('screenopname.chartDetail');
+
 
 
 //route untuk save data
@@ -62,8 +68,16 @@ Route::get('/admin_dashboard/daftar_harga/edit/{id}', [PricelistController::clas
 
 Route::put('/admin_dashboard/daftar_harga/edit/{id}', [PricelistController::class, 'update'])->name('daftarharga.update');
 
-//route chart
-Route::get('/admin_dashboard/chart-data', [ScreenopnameController::class, 'getChartData'])->name('screenopname.chartData');
+
+// kasir
+Route::get('/admin_dashboard/kasir', [KasirController::class, 'index'])->name('kasir.index');
+
+Route::get('/admin_dashboard/kasir/{id}', [KasirController::class, 'detail'])->name('kasir.detail');
+
+Route::get('/admin_dashboard/kasir/checkout', [KasirController::class, 'checkout'])->name('kasir.checkout');
+Route::post('/admin_dashboard/kasir/addToCart/{id}', [KasirController::class, 'addToCart'])->name('kasir.addToCart');
+
+
 
 
 //logout

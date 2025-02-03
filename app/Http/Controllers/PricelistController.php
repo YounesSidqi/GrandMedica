@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kasir;
 use App\Models\PriceList;
 use Illuminate\Http\Request;
 
@@ -88,21 +89,57 @@ class PricelistController extends Controller
     {
         // Validasi input
         $request->validate([
-            'harga_Umum' => 'required|string',
-            'harga_BPJS' => 'required|string',
-            'harga_Tender' => 'required|string',
+            'harga_Umum' => 'required|integer',
+            'harga_BPJS' => 'required|integer',
+            'harga_Tender1' => 'required|integer',
+            'harga_Tender2' => 'required|integer',
+            'harga_Tender3' => 'required|integer',
         ],[
             'harga_Umum.required' => 'harga Umum wajib diisi',
             'harga_BPJS.required' => 'harga BPJS wajib diisi',
-            'harga_Tender.required' => 'harga Tender wajib diisi',
+            'harga_Tender1.required' => 'harga Tender wajib diisi',
+            'harga_Tender2.required' => 'harga Tender wajib diisi',
+            'harga_Tender3.required' => 'harga Tender wajib diisi'
         ]);
 
     // Ambil data item dari screen_opname
     $item = PriceList::findOrFail($id);
 
-    // Update data di tabel screen_opname
-    $data = $request->only(['harga_Umum', 'harga_BPJS', 'harga_Tender']);
+    // Simpan nama obat lama untuk referensi
+    $oldHargaUmum = $item->harga_Umum;
+
+    // Simpan nama obat lama untuk referensi
+    $oldHargaBPJS = $item->harga_BPJS;
+
+    // Simpan nama obat lama untuk referensi
+    $oldHargaTender1 = $item->harga_Tender1;
+
+    // Simpan nama obat lama untuk referensi
+    $oldHargaTender2 = $item->harga_Tender2;
+
+    // Simpan nama obat lama untuk referensi
+    $oldHargaTender3= $item->harga_Tender3;
+
+
+    // Update data di tabel pricelist
+    $data = $request->only(['harga_Umum', 'harga_BPJS', 'harga_Tender1', 'harga_Tender2', 'harga_Tender3']);
     $item->update($data);
+
+     // Jika nama_obat, no_seri, atau harga_umum berubah, update juga di tabel pricelist
+    if ($oldHargaUmum !== $data['harga_Umum'] || $oldHargaBPJS !== $data['harga_BPJS'] || $oldHargaTender1 !== $data['harga_Tender2'] || $oldHargaTender2 !== $data['harga_Tender2'] || $oldHargaTender3 !== $data['harga_Tender3']) {
+        Kasir::where('harga_Umum', $oldHargaUmum)
+            ->where('harga_BPJS', $oldHargaBPJS)
+            ->where('harga_Tender1', $oldHargaTender1)
+            ->where('harga_Tender2', $oldHargaTender2)
+            ->where('harga_Tender3', $oldHargaTender3)
+            ->update([
+                'harga_Umum' => $data['harga_Umum'],
+                'harga_BPJS' => $data['harga_BPJS'],
+                'harga_Tender1' => $data['harga_Tender1'],
+                'harga_Tender2' => $data['harga_Tender2'],
+                'harga_Tender3' => $data['harga_Tender3'],
+            ]);
+    }
 
     return redirect()->route('daftarharga.home')->with('success', 'Berhasil mengubah data');
 

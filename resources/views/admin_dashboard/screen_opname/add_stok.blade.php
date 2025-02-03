@@ -57,13 +57,13 @@
           <label class="block text-gray-700 text-sm font-bold mb-2" for="Jumlah_qty">
             Stok yang masuk :
           </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="stok_masuk" type="number" name="stok_masuk" placeholder="Input jumlah stok yang ingin dimasukkan" >
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="pemasukan" type="number" name="pemasukan" placeholder="Input jumlah stok yang ingin dimasukkan" >
         </div>
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="Jumlah_qty">
             Stok yang sudah keluar :
           </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="Jumlah_qty" type="text" name="Jumlah_qty" readonly value="{{$item->stok_keluar}}" >
+          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="Jumlah_qty" type="text" name="Jumlah_qty" readonly value="{{$item->pengeluaran}}" >
         </div>
         <div class="flex items-center justify-center">
           <button class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
@@ -92,7 +92,7 @@
         if (data.success) {
           // Update nilai Qty dan Stok Masuk di UI
           const qtyInput = document.getElementById('qty');
-          const stokMasukElement = document.getElementById('stok_masuk');
+          const stokMasukElement = document.getElementById('pemasukan');
   
           qtyInput.value = parseInt(qtyInput.value) + tambahStokValue;
           stokMasukElement.innerText = parseInt(stokMasukElement.innerText) + tambahStokValue;

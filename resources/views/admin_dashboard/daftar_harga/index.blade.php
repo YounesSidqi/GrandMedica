@@ -34,10 +34,13 @@
       <table class="min-w-full table-auto">
         <thead>
           <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+            <th class="py-3 px-6 text-left">No Seri</th>
             <th class="py-3 px-6 text-left">Nama Obat</th>
             <th class="py-3 px-6 text-center">Harga Umum</th>
             <th class="py-3 px-6 text-center">Harga BPJS</th>
-            <th class="py-3 px-6 text-center">Harga Tender</th>
+            <th class="py-3 px-6 text-center">Harga Tender 1</th>
+            <th class="py-3 px-6 text-center">Harga Tender 2</th>
+            <th class="py-3 px-6 text-center">Harga Tender 3</th>
             <th class="py-3 px-6 text-left"></th>
           </tr>
         </thead>
@@ -45,10 +48,13 @@
           <!-- Row 1 -->
           @foreach ($data as $item)
           <tr class="border-b border-gray-200 hover:bg-gray-100">
+            <td class="py-3 px-6 text-left">{{ $item->no_seri }}</td>
             <td class="py-3 px-6 text-left">{{ $item->nama_obat }}</td>
             <td class="py-3 px-6 text-center">Rp{{ $item->harga_Umum }}</td>
             <td class="py-3 px-6 text-center">Rp{{ $item->harga_BPJS }}</td>
-            <td class="py-3 px-6 text-center">Rp{{ $item->harga_Tender }}</td>
+            <td class="py-3 px-6 text-center">Rp{{ $item->harga_Tender1 }}</td>
+            <td class="py-3 px-6 text-center">Rp{{ $item->harga_Tender2 }}</td>
+            <td class="py-3 px-6 text-center">Rp{{ $item->harga_Tender3 }}</td>
             <td class="py-3 px-6 text-left">
               <a href="{{ route('daftarharga.edit', ['id' => $item->id]) }}" class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 mr-2">Edit Product</a>
             </td>
