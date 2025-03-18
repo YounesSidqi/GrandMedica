@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Kasir;
 use App\Models\PriceList;
 use App\Models\ScreenOpname;
@@ -81,10 +82,6 @@ class ScreenopnameController extends Controller
         'exp' => $request->input('exp'),
         'qty' => $request->input('qty'),
         'harga_Umum' => $request->input('harga_Umum', 0), 
-        'harga_BPJS' => $request->input('harga_BPJS', 0), 
-        'harga_Tender1' => $request->input('harga_Tender1', 0), 
-        'harga_Tender2' => $request->input('harga_Tender2', 0), 
-        'harga_Tender3' => $request->input('harga_Tender3', 0)
     ]);
 
     return redirect()->route('screenopname.home')->with('success', 'Data berhasil disimpan');
@@ -166,6 +163,18 @@ class ScreenopnameController extends Controller
                 'nama_obat' => $data['nama_obat'],
                 'no_seri' => $data['no_seri'],
                 'qty' => $data['qty'],
+                'exp' => $data['exp'],
+            ]);
+    }
+
+    // Jika nama_obat, no_seri, atau harga_umum berubah, update juga di tabel pricelist
+    if ($oldNamaObat !== $data['nama_obat'] || $oldNoSeri !== $data['no_seri'] || $oldExp!== $data['exp']) {
+        Cart::where('nama_obat', $oldNamaObat)
+            ->where('no_seri', $oldNoSeri)
+            ->where('exp', $oldExp)
+            ->update([
+                'nama_obat' => $data['nama_obat'],
+                'no_seri' => $data['no_seri'],
                 'exp' => $data['exp'],
             ]);
     }
@@ -265,16 +274,19 @@ public function stokKeluar(Request $request, $id)
     $item = ScreenOpname::findOrFail($id);
 
     // Ambil nama obat dari item yang akan dihapus
-    $namaObat = $item->nama_obat;
+    $id = $item->id;
 
     // Hapus item dari tabel screen_opname
     $item->delete();
 
     // Hapus item dari tabel daftar_harga yang memiliki nama obat yang sama
-    PriceList::where('nama_obat', $namaObat)->delete();
+    PriceList::where('id', $id)->delete();
 
     // Hapus item dari tabel daftar_harga yang memiliki nama obat yang sama
-    Kasir::where('nama_obat', $namaObat)->delete();
+    Kasir::where('id', $id)->delete();
+    
+    // Hapus item dari tabel daftar_harga yang memiliki nama obat yang sama
+    Cart::where('id', $id)->delete();
 
     return redirect()->route('screenopname.home')->with('success', 'Data berhasil dihapus');
 }
