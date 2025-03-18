@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('kasir', function (Blueprint $table) {
+        Schema::create('cart', function (Blueprint $table) {
             $table->id();
             $table->string('no_seri');
             $table->string('nama_obat');
+            $table->string('qty');
             $table->string('exp');
-            $table->integer('qty');
             $table->integer('harga_Umum');
+            $table->integer('harga_total');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('cart');
     }
 };

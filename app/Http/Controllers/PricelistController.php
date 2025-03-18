@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Kasir;
 use App\Models\PriceList;
 use Illuminate\Http\Request;
@@ -36,32 +37,7 @@ class PricelistController extends Controller
      */
     public function store(Request $request)
     {
-        // $request->validate([
-        //     'nama_obat' => 'required',
-        //     'harga_Umum' => 'required|integer',
-        //     'harga_BPJS' => 'required|integer',
-        //     'harga_Tender' => 'required|integer',
-        // ],[
-        //     'nama_obat.required' => 'nama obat wajib diisi',
-        //     'harga_Umum.required' => 'harga Umum wajib diisi',
-        //     'harga_Umum.integer' => 'harga Umum harus berupa angka',
-        //     'harga_BPJS.required' => 'harga BPJS wajib diisi',
-        //     'harga_BPJS.integer' => 'harga BPJS harus berupa angka',
-        //     'harga_Tender.required' => 'harga Tender wajib diisi',
-        //     'harga_Tender.integer' => 'harga Tender harus berupa angka',
-        // ]);
-
-        // $data = [
-        //     'nama_obat' => $request->input('nama_obat'),
-        //     'harga_Umum' => $request->input('harga_Umum'),
-        //     'harga_BPJS' => $request->input('harga_BPJS'),
-        //     'harga_Tender' => $request->input('harga_Tender')
-        // ];
-
-        
-
-        // PriceList::create($data);
-        // return redirect() -> route('daftarharga.home') -> with('success','Data berhasil di simpan');
+        //
     }
 
     /**
@@ -102,23 +78,11 @@ class PricelistController extends Controller
             'harga_Tender3.required' => 'harga Tender wajib diisi'
         ]);
 
-    // Ambil data item dari screen_opname
+    // Ambil data item dari PriceList
     $item = PriceList::findOrFail($id);
 
     // Simpan nama obat lama untuk referensi
     $oldHargaUmum = $item->harga_Umum;
-
-    // Simpan nama obat lama untuk referensi
-    $oldHargaBPJS = $item->harga_BPJS;
-
-    // Simpan nama obat lama untuk referensi
-    $oldHargaTender1 = $item->harga_Tender1;
-
-    // Simpan nama obat lama untuk referensi
-    $oldHargaTender2 = $item->harga_Tender2;
-
-    // Simpan nama obat lama untuk referensi
-    $oldHargaTender3= $item->harga_Tender3;
 
 
     // Update data di tabel pricelist
@@ -126,18 +90,18 @@ class PricelistController extends Controller
     $item->update($data);
 
      // Jika nama_obat, no_seri, atau harga_umum berubah, update juga di tabel pricelist
-    if ($oldHargaUmum !== $data['harga_Umum'] || $oldHargaBPJS !== $data['harga_BPJS'] || $oldHargaTender1 !== $data['harga_Tender2'] || $oldHargaTender2 !== $data['harga_Tender2'] || $oldHargaTender3 !== $data['harga_Tender3']) {
-        Kasir::where('harga_Umum', $oldHargaUmum)
-            ->where('harga_BPJS', $oldHargaBPJS)
-            ->where('harga_Tender1', $oldHargaTender1)
-            ->where('harga_Tender2', $oldHargaTender2)
-            ->where('harga_Tender3', $oldHargaTender3)
+    if ($oldHargaUmum !== $data['harga_Umum']) {
+        Kasir::where('id', $item->id)
             ->update([
                 'harga_Umum' => $data['harga_Umum'],
-                'harga_BPJS' => $data['harga_BPJS'],
-                'harga_Tender1' => $data['harga_Tender1'],
-                'harga_Tender2' => $data['harga_Tender2'],
-                'harga_Tender3' => $data['harga_Tender3'],
+            ]);
+    }
+
+     // Jika nama_obat, no_seri, atau harga_umum berubah, update juga di tabel pricelist
+     if ($oldHargaUmum !== $data['harga_Umum']) {
+        Cart::where('id', $item->id)
+            ->update([
+                'harga_Umum' => $data['harga_Umum'],
             ]);
     }
 

@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ChartsController;
 use App\Http\Controllers\KasirController;
+use App\Http\Controllers\ModalController;
 use App\Http\Controllers\PricelistController;
 use App\Http\Controllers\ScreenopnameController;
 use App\Models\ScreenOpname;
@@ -40,8 +41,8 @@ Route::get('/admin_dashboard/screen_opname/tambah_stok/{id}',
 Route::get('/admin_dashboard/screen_opname/pengeluaran_stok/{id}',
 [ScreenopnameController::class, 'pageStokPengeluaran'])->name('screenopname.pagestokpengeluaran');
 //route chart
-Route::get('/admin_dashboard/screen_opname/chart-data/{id}', [ScreenopnameController::class, 'getChartData'])->name('screenopname.chartData');
-Route::get('/admin_dashboard/screen_opname/chart-data/chart-detail/{month}', [ScreenopnameController::class, 'showChartDetail'])->name('screenopname.chartDetail');
+// Route::get('/admin_dashboard/screen_opname/chart-data/{id}', [ScreenopnameController::class, 'getChartData'])->name('screenopname.chartData');
+// Route::get('/admin_dashboard/screen_opname/chart-data/chart-detail/{month}', [ScreenopnameController::class, 'showChartDetail'])->name('screenopname.chartDetail');
 
 
 
@@ -71,11 +72,15 @@ Route::put('/admin_dashboard/daftar_harga/edit/{id}', [PricelistController::clas
 
 // kasir
 Route::get('/admin_dashboard/kasir', [KasirController::class, 'index'])->name('kasir.index');
+Route::get('/admin_dashboard/kasir/qrcode', [KasirController::class, 'qrcode'])->name('kasir.qrcode');
+Route::get('/admin_dashboard/kasir/paymentdone', [KasirController::class, 'paymentdone'])->name('kasir.paymentdone');
+Route::get('/admin_dashboard/kasir/printstruk', [KasirController::class, 'printstruk'])->name('kasir.printstruk');
+Route::get('/admin_dashboard/kasir/{id}', [KasirController::class, 'showCart'])->name('modal.detail');
+Route::post('/admin_dashboard/kasir/{id}', [KasirController::class, 'storeCart'])->name('modal.addtocart');
 
-Route::get('/admin_dashboard/kasir/{id}', [KasirController::class, 'detail'])->name('kasir.detail');
+//route delete
+Route::delete('/admin_dashboard/kasir/{id}', [KasirController::class, 'destroy'])->name('cart.delete');
 
-Route::get('/admin_dashboard/kasir/checkout', [KasirController::class, 'checkout'])->name('kasir.checkout');
-Route::post('/admin_dashboard/kasir/addToCart/{id}', [KasirController::class, 'addToCart'])->name('kasir.addToCart');
 
 
 

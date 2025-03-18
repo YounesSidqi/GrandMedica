@@ -9,7 +9,7 @@ class Kasir extends Model
 {
     use HasFactory;
     protected $table = "kasir";
-    protected $fillable = ["no_seri", "nama_obat", "exp", "qty", "harga_Umum", "harga_BPJS", "harga_Tender1", "harga_Tender2", "harga_Tender3"];
+    protected $fillable = ["no_seri", "nama_obat", "exp", "qty", "harga_Umum"];
 
      // Relasi ke ScreenOpname
      public function screenOpname()
