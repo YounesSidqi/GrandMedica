@@ -128,57 +128,83 @@
                         </button>
                     
                         <!-- Modal -->
-                        <div id="popup-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
-                            <div class="p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 max-w-md w-full h-auto max-h-auto mx-auto flex flex-col">
+                        <div id="popup-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
+                            <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md p-8 transform transition-all duration-300 scale-100">
+                                <!-- Header -->
+                                <div class="text-center mb-6">
+                                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Pilih Metode Pembayaran</h2>
+                                </div>
 
-                                <h1 class="text-2xl text-center font-bold pb-5">Payment Method</h1>
+                            <!-- Metode Pembayaran: Ikon Cash dan QRIS -->
+                        <div class="flex justify-between mb-6">
+                            <button id="cashBtn" onclick="togglePaymentMethod('cash')" class="w-1/2 py-4 flex flex-col items-center justify-center space-y-2 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition duration-200 mx-2">
+                                <i class="fa-solid fa-money-bill text-2xl"></i>
+                                <span class="text-gray-800 dark:text-white font-medium">Tunai</span>
+                            </button>
+                            <button id="qrisBtn" onclick="togglePaymentMethod('qris')" class="w-1/2 py-4 flex flex-col items-center justify-center space-y-2 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition duration-200 mx-2">
+                                <i class="fa-solid fa-qrcode text-2xl"></i>
+                                <span class="text-gray-800 dark:text-white font-medium">QRIS</span>
+                            </button>
+                        </div>
 
-                            <div class="flex justify-center items-center">
-                                <form class="w-60">
-                                    <select id="metode" onchange="togglePaymentMethod()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 ">
-                                        <option value="" selected>Pilih metode pembayaran</option>
-                                        <option value="cash">Cash</option>
-                                        <option value="qris">QRIS</option>
-                                    </select>
-                                </form>
+
+                        <!-- Cash Payment Section -->
+                        <div id="tunaiDiv" class="hidden">
+                            <div class="mb-6">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-800 dark:text-white font-medium">Total Harga</span>
+                                    <span class="text-gray-800 dark:text-white font-bold" id="totalHarga">Rp. 100,000</span>
+                                </div>
+                                <div class="flex justify-between items-center mt-4">
+                                    <span class="text-gray-800 dark:text-white font-medium">Tunai yang Diberikan</span>
+                                    <div class="flex items-center space-x-2">
+                                        <span>Rp.</span>
+                                        <input type="text" id="tunaiInput" placeholder="0" class="w-32 px-3 py-2 border rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring focus:ring-blue-300" oninput="calculateKembalian()" />
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center mt-4">
+                                    <span class="text-gray-800 dark:text-white font-medium">Kembalian</span>
+                                    <span class="text-gray-800 dark:text-white font-bold" id="kembalian">Rp. 0</span>
+                                </div>
+                                <a href="{{url('admin_dashboard/kasir/paymentdone')}}" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md transition duration-200 mt-6">Bayar Sekarang</a>
                             </div>
-                                
-                                {{-- Input tunai (default: hidden) --}}
-                                <div id="tunaiDiv" class="flex justify-between hidden">
-                                    <span>Tunai</span>
-                                    <div class="flex">
-                                        <p>Rp.</p>
-                                        <input class="border border-solid border-black w-auto" type="text">
-                                    </div>
-                                    <a href="{{url('admin_dashboard/kasir/paymentdone')}}" class="p-2 text-white rounded-md bg-green-600">Bayar</a>
-                                </div>
-                                
-                                {{-- QRIS (default: hidden) --}}
-                                <div id="qrisDiv" class="flex justify-between hidden">
-                                    <span>QRIS</span>
-                                    <div class="flex">
-                                        <a href="{{url('admin_dashboard/kasir/qrcode')}}" class="bg-green-600 p-2 rounded-md text-sm text-white">Scan Barcode</a>
-                                    </div>
-                                </div>
-                                
-                                <script>
-                                    function togglePaymentMethod() {
-                                        let metode = document.getElementById("metode").value;
-                                        let tunaiDiv = document.getElementById("tunaiDiv");
-                                        let qrisDiv = document.getElementById("qrisDiv");
-                                
-                                        // Sembunyikan semua dulu
-                                        tunaiDiv.classList.add("hidden");
-                                        qrisDiv.classList.add("hidden");
-                                
-                                        // Tampilkan sesuai pilihan
-                                        if (metode === "cash") {
-                                            tunaiDiv.classList.remove("hidden");
-                                        } else if (metode === "qris") {
-                                            qrisDiv.classList.remove("hidden");
-                                        }
-                                    }
-                                </script>
+                        </div>
+
+                        <!-- QRIS Payment Section -->
+                        <div id="qrisDiv" class="hidden">
+                            <div class="flex flex-col items-center space-y-4">
+                                <span class="text-gray-800 dark:text-white font-medium">Scan Barcode QRIS</span>
+                                <a href="{{url('admin_dashboard/kasir/qrcode')}}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm transition duration-200">Scan QR</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+<script>
+    function togglePaymentMethod(method) {
+        const tunaiDiv = document.getElementById("tunaiDiv");
+        const qrisDiv = document.getElementById("qrisDiv");
+        
+        // Hide both divs initially
+        tunaiDiv.classList.add("hidden");
+        qrisDiv.classList.add("hidden");
+
+        if (method === "cash") {
+            tunaiDiv.classList.remove("hidden");
+        } else if (method === "qris") {
+            qrisDiv.classList.remove("hidden");
+        }
+    }
+
+    function calculateKembalian() {
+        const totalHarga = parseInt(document.getElementById("totalHarga").innerText.replace('Rp. ', '').replace('.', ''));
+        const tunaiDiberikan = parseInt(document.getElementById("tunaiInput").value.replace('.', '') || 0);
+
+        const kembalian = tunaiDiberikan - totalHarga;
+        document.getElementById("kembalian").innerText = `Rp. ${kembalian.toLocaleString()}`;
+    }
+</script>
+
                                 
 
 
