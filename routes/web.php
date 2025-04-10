@@ -74,12 +74,15 @@ Route::put('/admin_dashboard/daftar_harga/edit/{id}', [PricelistController::clas
 Route::get('/admin_dashboard/kasir', [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/admin_dashboard/kasir/qrcode', [KasirController::class, 'qrcode'])->name('kasir.qrcode');
 Route::get('/admin_dashboard/kasir/paymentdone', [KasirController::class, 'paymentdone'])->name('kasir.paymentdone');
-Route::get('/admin_dashboard/kasir/printstruk', [KasirController::class, 'printstruk'])->name('kasir.printstruk');
+Route::get('/admin_dashboard/kasir/printstruk/{id}', [KasirController::class, 'printstruk'])->name('kasir.printstruk');
 Route::get('/admin_dashboard/kasir/{id}', [KasirController::class, 'showCart'])->name('modal.detail');
 Route::post('/admin_dashboard/kasir/{id}', [KasirController::class, 'storeCart'])->name('modal.addtocart');
 
 //route delete
 Route::delete('/admin_dashboard/kasir/{id}', [KasirController::class, 'destroy'])->name('cart.delete');
+
+//payment
+Route::post('/admin_dashboard/kasir/payment', [KasirController::class, 'paymentCash'])->name('process.paymentcash');
 
 
 

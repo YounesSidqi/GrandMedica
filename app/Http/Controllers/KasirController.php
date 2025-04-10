@@ -130,6 +130,11 @@ class KasirController extends Controller
         //
     }
 
+    public function paymentCash(Request $request)
+    {
+        
+    }
+
     /**
      * Remove the specified resource from storage.
      */

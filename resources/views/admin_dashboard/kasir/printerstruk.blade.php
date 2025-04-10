@@ -92,6 +92,12 @@
     function printReceipt() {
         window.print();
     }
+    window.onload = function () {
+        window.print();
+        setTimeout(function () {
+            window.location.href = "{{ route('kasir.index') }}"; // Kembali ke halaman kasir setelah cetak
+        }, 3000); // Redirect setelah 3 detik
+    };
 </script>
 
 @endsection
