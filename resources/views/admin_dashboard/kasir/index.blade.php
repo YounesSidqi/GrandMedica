@@ -42,14 +42,14 @@
             <!-- Pencarian -->
             <div class="">
                 <form action="{{ route('kasir.index') }}" class="w-auto max-w-sm" method="GET">
-                  <div class="flex items-center border-b border-green-500 py-2">
+                <div class="flex items-center border-b border-green-500 py-2">
                     <input class="appearance-none bg-transparent border-none w-full text-gray-700 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="Masukkan kata kunci" aria-label="Full name" name="search"  value="{{request('search')}}">
                     <button class="flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-white py-1 px-4 rounded" type="submit">
-                      Cari 
+                    Cari 
                     </button>
-                  </div>
+                </div>
                 </form>
-              </div>
+            </div>
 
 
                 <!-- Daftar Obat -->
@@ -121,71 +121,101 @@
                 
                     <!-- Tombol -->
                     <div class="mt-4 flex justify-between">
+                        
                         <button class="bg-red-500 text-white px-4 py-2 rounded-lg">Batal</button>
                         <button data-modal-target="popup-modal" data-modal-toggle="popup-modal" 
-                            class="bg-blue-500 text-white px-4 py-2 rounded-lg" type="button">
+                            class="bg-blue-500 text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            type="button"
+                            @if($total_qty == 0) disabled @endif>
                             Bayar
                         </button>
+
                     
                         <!-- Modal -->
                         <div id="popup-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40 backdrop-blur-sm">
                             <div class="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-md p-8 transform transition-all duration-300 scale-100">
                                 <!-- Header -->
                                 <div class="text-center mb-6">
-                                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Pilih Metode Pembayaran</h2>
+                                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Pembayaran</h2>
+                                    <p class="text-gray-600 dark:text-gray-400 mt-2">Total yang harus dibayar</p>
+                                    <p class="text-2xl font-bold text-green-600 mt-2">Rp. {{ number_format($total_harga, 0, ',', '.') }}</p>
                                 </div>
 
-                            <!-- Metode Pembayaran: Ikon Cash dan QRIS -->
-                        <div class="flex justify-between mb-6">
-                            <button id="cashBtn" onclick="togglePaymentMethod('cash')" class="w-1/2 py-4 flex flex-col items-center justify-center space-y-2 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition duration-200 mx-2">
-                                <i class="fa-solid fa-money-bill text-2xl"></i>
-                                <span class="text-gray-800 dark:text-white font-medium">Tunai</span>
-                            </button>
-                            <button id="qrisBtn" onclick="togglePaymentMethod('qris')" class="w-1/2 py-4 flex flex-col items-center justify-center space-y-2 bg-gray-200 dark:bg-gray-800 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-700 transition duration-200 mx-2">
-                                <i class="fa-solid fa-qrcode text-2xl"></i>
-                                <span class="text-gray-800 dark:text-white font-medium">QRIS</span>
-                            </button>
-                        </div>
-
-
-                        <!-- Cash Payment Section -->
-                        <div id="tunaiDiv" class="hidden">
-                            <div class="mb-6">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-gray-800 dark:text-white font-medium">Total Harga</span>
-                                    <span class="text-gray-800 dark:text-white font-bold" id="totalHarga">Rp. 100,000</span>
+                                <!-- Metode Pembayaran -->
+                                <div class="flex justify-between mb-6">
+                                    <button id="cashBtn" onclick="togglePaymentMethod('cash')" 
+                                        class="w-1/2 py-4 flex flex-col items-center justify-center space-y-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-200 mx-2">
+                                        <i class="fa-solid fa-money-bill text-3xl text-green-600"></i>
+                                        <span class="text-gray-800 dark:text-white font-medium">Tunai</span>
+                                    </button>
+                                    <button id="qrisBtn" onclick="togglePaymentMethod('qris')" 
+                                        class="w-1/2 py-4 flex flex-col items-center justify-center space-y-2 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition duration-200 mx-2">
+                                        <i class="fa-solid fa-qrcode text-3xl text-green-600"></i>
+                                        <span class="text-gray-800 dark:text-white font-medium">QRIS</span>
+                                    </button>
                                 </div>
-                                <div class="flex justify-between items-center mt-4">
-                                    <span class="text-gray-800 dark:text-white font-medium">Tunai yang Diberikan</span>
-                                    <div class="flex items-center space-x-2">
-                                        <span>Rp.</span>
-                                        <input type="text" id="tunaiInput" placeholder="0" class="w-32 px-3 py-2 border rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring focus:ring-blue-300" oninput="calculateKembalian()" />
+
+                                <!-- Cash Payment Section -->
+                                <div id="tunaiDiv" class="hidden">
+                                    <div class="mb-6 space-y-4">
+                                        <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                            <span class="text-gray-800 dark:text-white font-medium">Total Harga</span>
+                                            <span class="text-gray-800 dark:text-white font-bold" id="totalHarga">Rp. {{ number_format($total_harga, 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                            <span class="text-gray-800 dark:text-white font-medium">Tunai yang Diberikan</span>
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-gray-800 dark:text-white">Rp.</span>
+                                                <input type="number" id="tunaiInput" name="tunai_amount" placeholder="0" 
+                                                    class="w-32 px-3 py-2 border rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                                    oninput="calculateKembalian()" required />
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-between items-center bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                            <span class="text-gray-800 dark:text-white font-medium">Kembalian</span>
+                                            <span class="text-gray-800 dark:text-white font-bold" id="kembalian">Rp. 0</span>
+                                        </div>
+                                        <form action="{{ route('kasir.paymentdone') }}" method="POST" onsubmit="return validatePayment()">
+                                            @csrf
+                                            <input type="hidden" name="tunai_amount" id="tunaiAmount">
+                                            <button type="submit" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 mt-6">
+                                                Bayar Sekarang
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
-                                <div class="flex justify-between items-center mt-4">
-                                    <span class="text-gray-800 dark:text-white font-medium">Kembalian</span>
-                                    <span class="text-gray-800 dark:text-white font-bold" id="kembalian">Rp. 0</span>
-                                </div>
-                                <a href="{{url('admin_dashboard/kasir/paymentdone')}}" class="block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-md transition duration-200 mt-6">Bayar Sekarang</a>
-                            </div>
-                        </div>
 
-                        <!-- QRIS Payment Section -->
-                        <div id="qrisDiv" class="hidden">
-                            <div class="flex flex-col items-center space-y-4">
-                                <span class="text-gray-800 dark:text-white font-medium">Scan Barcode QRIS</span>
-                                <a href="{{url('admin_dashboard/kasir/qrcode')}}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm transition duration-200">Scan QR</a>
+                                <!-- QRIS Payment Section -->
+                                <div id="qrisDiv" class="hidden">
+                                    <div class="flex flex-col items-center space-y-6">
+                                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                                            <img class="w-48 h-48" src="{{ asset('assets/img/qrcode.svg') }}" alt="QR Code">
+                                        </div>
+                                        <div class="text-center">
+                                            <p class="text-gray-800 dark:text-white font-medium">Scan QR Code untuk pembayaran</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Pastikan Anda telah menyelesaikan pembayaran sebelum melanjutkan</p>
+                                        </div>
+                                        <a href="{{ route('kasir.paymentdoneqris')}}" 
+                                            class="w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition duration-200">
+                                            Pembayaran Selesai
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>  
+        </div>
+    </div>
+</div>
 
 <script>
     function togglePaymentMethod(method) {
         const tunaiDiv = document.getElementById("tunaiDiv");
         const qrisDiv = document.getElementById("qrisDiv");
         
-        // Hide both divs initially
+        // Sembunyikan keduanya dulu
         tunaiDiv.classList.add("hidden");
         qrisDiv.classList.add("hidden");
 
@@ -197,136 +227,29 @@
     }
 
     function calculateKembalian() {
-        const totalHarga = parseInt(document.getElementById("totalHarga").innerText.replace('Rp. ', '').replace('.', ''));
-        const tunaiDiberikan = parseInt(document.getElementById("tunaiInput").value.replace('.', '') || 0);
+        const totalHargaText = document.getElementById("totalHarga").innerText;
+        const totalHarga = parseInt(totalHargaText.replace('Rp. ', '').replace(/\./g, '')) || 0;
 
+        const tunaiDiberikan = parseInt(document.getElementById("tunaiInput").value) || 0;
         const kembalian = tunaiDiberikan - totalHarga;
-        document.getElementById("kembalian").innerText = `Rp. ${kembalian.toLocaleString()}`;
+
+        const formattedKembalian = kembalian.toLocaleString('id-ID');
+        
+        document.getElementById("kembalian").innerText = 'Rp. ' + formattedKembalian;
+        document.getElementById("tunaiAmount").value = tunaiDiberikan;
+    }
+
+    function validatePayment() {
+        const tunaiDiberikan = parseInt(document.getElementById("tunaiInput").value) || 0;
+        const totalHarga = parseInt(document.getElementById("totalHarga").innerText.replace('Rp. ', '').replace(/\./g, '')) || 0;
+
+        if (tunaiDiberikan < totalHarga) {
+            alert('Jumlah tunai tidak mencukupi');
+            return false;
+        }
+        return true;
     }
 </script>
 
-                                
-
-
-
-                                {{-- <!-- Area Print (Flexible) -->
-                                <div id="print-area" class="flex-1 overflow-auto max-h-[60vh] w-auto p-10">
-                                    <img class="justify-center flex" src="{{ asset('assets/img/logogrand.png') }}" alt="Logo" class="h-10">
-                                    <div class="text-center mb-4 pt-4">
-                                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">APOTEK METRO JAYA</h2>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 px-6">JI. MT. Haryano No, 05 RT, 11 Balikpapan Kalimantan Timur
-                                        No izin : 30082301553750006
-                                        </p>
-                                        <hr class="my-2 border-gray-300 dark:border-gray-700">
-                                    </div>
-
-                                    <div class="grid grid-cols-4 gap-4">
-                                        <div class="col-span-1">Kasir</div>
-                                        <div class="col-span-1">:</div>
-                                        <div class="col-span-2">Shilva Azzaria Putri</div>
-                                    </div>
-                                    <div class="grid grid-cols-4 gap-4">
-                                        <div class="col-span-1">Pelanggan</div>
-                                        <div class="col-span-1">:</div>
-                                        <div class="col-span-2">-</div>
-                                    </div>
-                                    <div class="grid grid-cols-4 gap-4">
-                                        <div class="col-span-1">Tanggal</div>
-                                        <div class="col-span-1">:</div>
-                                        <div class="col-span-2">08-03-2023 05:23</div>
-                                    </div>
-                                    <div class="grid grid-cols-4 gap-4">
-                                        <div class="col-span-1">No</div>
-                                        <div class="col-span-1">:</div>
-                                        <div class="col-span-2">SIN-250208-004</div>
-                                    </div>
-
-                                    @foreach ($cart as $items)
-                                        <div class="grid grid-cols-4 gap-1 pt-3">
-                                            <div class="col-span-4">{{$items->nama_obat}}</div>
-                                            <div class="col-span-2 pl-2">
-                                                <p>{{$items->qty}} PCS x {{$items->harga_Umum}}</p>
-                                            </div>
-                                            <div class="col-span-2 text-end">{{$items->harga_total}}</div>
-                                        </div>
-                                    @endforeach
-
-                                    <div class="grid grid-cols-4 gap-4 pt-5">
-                                        <div class="col-span-2">Subtotal</div>
-                                        <div class="col-span-1">:</div>
-                                        <div class="col-span-1 text-end">{{$total_harga}}</div>
-                                    </div>
-                                    <div class="grid grid-cols-4 gap-4">
-                                        <div class="col-span-2 text-xl text-start">Total</div>
-                                        <div class="col-span-1 text-xl">:</div>
-                                        <div class="col-span-1 text-xl text-end">{{$total_harga}}</div>
-                                    </div>
-                            
-                                    <div class="text-center mt-4 text-gray-500 dark:text-gray-400 text-xs">
-                                        <p>Terima kasih telah berbelanja!</p>
-                                        <p>Semoga harimu menyenangkan.</p>
-                                    </div>
-                                </div>
-                        
-                                <!-- Tombol Cetak di Bawah -->
-                                <div class="mt-auto pt-4">
-                                    <button onclick="printReceipt()" class="w-full px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-800 focus:ring-4 focus:ring-green-300 dark:focus:ring-green-800">
-                                        Cetak Struk
-                                    </button>
-                                </div> --}}
-                            </div>
-                        </div>
-                        
-                        
-                        
-                        
-                    </div>
-                    
-                    <script>
-                        function printReceipt() {
-    let printArea = document.getElementById("print-area").innerHTML;
-    let originalContent = document.body.innerHTML;
-
-    let printWindow = window.open("", "_blank");
-    printWindow.document.open();
-    printWindow.document.write(`
-        <html>
-        <head>
-            <title>Cetak Struk</title>
-            <style>
-                @media print {
-                    @page {
-                        size: 80mm auto;
-                        margin: 5mm;
-                    }
-                    body {
-                        font-size: 12px;
-                    }
-                    #print-area {
-                        width: 100%;
-                        padding: 5mm;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <div id="print-area">
-                ${printArea}
-            </div>
-        </body>
-        </html>
-    `);
-    printWindow.document.close();
-    printWindow.print();
-    printWindow.close();
-}
-
-
-                    </script>                    
-                </div>
-            </div>  
-        </div>
-    </div>
-</div>
 
 @endsection
