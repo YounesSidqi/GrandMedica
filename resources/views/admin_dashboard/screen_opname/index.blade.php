@@ -76,7 +76,7 @@
                                       <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Delete Product</button>
                                   </form>
                               </div>
-                              <div class="mt-3 flex space-x-5">
+                              {{-- <div class="mt-3 flex space-x-5">
                                   <form action="{{ url('/admin_dashboard/screen_opname/tambah_stok/' . $item->id) }}" method="GET">
                                       <button type="submit" class="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600">Add Stock</button>
                                   </form>
@@ -87,7 +87,7 @@
                                     <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">Chart</button>
                                 </form>
                                 
-                              </div>
+                              </div> --}}
                           </td>
                       </tr>
                   @endforeach

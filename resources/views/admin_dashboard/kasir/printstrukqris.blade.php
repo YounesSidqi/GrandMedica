@@ -1,14 +1,14 @@
 @extends('layout.app')
 
 @section('main')
-<div class="min-h-screen flex items-center justify-center">
-<div class="p-6 bg-white rounded-lg shadow-lg  max-w-md w-full md:w-[450px] h-auto max-h-auto mx-auto flex flex-col print-container">
+
+<div class="p-6 bg-white rounded-lg shadow-lg dark:bg-gray-800 max-w-md w-full md:w-[450px] h-auto max-h-auto mx-auto flex flex-col print-container">
     <!-- Area Print (Flexible) -->
     <div id="print-area" class="flex-1 w-auto p-4">
         <img class="justify-center flex w-16 mx-auto mb-2" src="{{ asset('assets/img/logogrand.png') }}" alt="Logo">
         <div class="text-center mb-2">
-            <h2 class="text-lg font-bold text-gray-900 ">APOTEK METRO JAYA</h2>
-            <p class="text-xs text-gray-500 ">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">APOTEK METRO JAYA</h2>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
                 JI. MT. Haryano No, 05 RT, 11 Balikpapan Kalimantan Timur <br>
                 No izin: 30082301553750006
             </p>
@@ -23,8 +23,8 @@
         </div>
 
         @foreach ($item as $items)
-            <div class="grid grid-cols-4 gap-0 pt-1 text-base">
-                <div class="col-span-4 text-lg">{{$items->nama_obat}}</div>
+            <div class="grid grid-cols-4 gap-0 pt-1 text-xs">
+                <div class="col-span-4">{{$items->nama_obat}}</div>
                 <div class="col-span-2 pl-2 text-start">{{$items->qty}} PCS x {{$items->harga_Umum}}</div>
                 <div class="col-span-2 text-end font-bold">{{$items->harga_total}}</div>
             </div>
@@ -49,7 +49,6 @@
             Cetak Struk
         </button>
     </div>
-</div>
 </div>
 
 <!-- CSS Print -->
@@ -91,14 +90,14 @@
 
 <script>
     function printReceipt() {
-    window.print();
-
-    // Setelah print selesai, kembali ke kasir (opsional)
-    setTimeout(function () {
-        window.location.href = "{{ route('kasir.index') }}";
-    }, 3000);
-}
-
+        window.print();
+    }
+    window.onload = function () {
+        window.print();
+        setTimeout(function () {
+            window.location.href = "{{ route('kasir.index') }}"; // Kembali ke halaman kasir setelah cetak
+        }, 3000); // Redirect setelah 3 detik
+    };
 </script>
 
 @endsection

@@ -66,8 +66,8 @@ class ScreenopnameController extends Controller
 
     // Simpan data ke tabel daftar_harga dengan default harga
     PriceList::create([
-        'no_seri' => $request->input('no_seri'),
         'nama_obat' => $request->input('nama_obat'),
+        'exp'=> $request->input('exp'),
         'harga_Umum' => 0, 
         'harga_BPJS' => 0,
         'harga_Tender1' => 0,

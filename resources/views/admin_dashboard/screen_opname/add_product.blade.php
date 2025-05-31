@@ -59,6 +59,8 @@
         <div class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="exp">
             Expired :
+            <br>
+            <span class="text-gray-600 opacity-20 text-xs">Contoh = 20 Mei, 2022 (harus seperti ini]</span>
           </label>
           <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="exp" type="text" name="exp" id="input" placeholder="Input exp disini" value="{{old('exp')}}">
         </div>

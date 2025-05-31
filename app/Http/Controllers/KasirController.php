@@ -6,9 +6,9 @@ use App\Models\Cart;
 use App\Models\Kasir;
 use App\Models\PriceList;
 use App\Models\ScreenOpname;
+use App\Models\TransactionDetails;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redis;
-use PhpParser\Node\Expr\Cast\String_;
+use Illuminate\Support\Facades\DB; // Tambahkan di atas controller
 
 class KasirController extends Controller
 {
@@ -17,29 +17,22 @@ class KasirController extends Controller
      */
     public function index()
     {
-
-        if (request('search')) {
-            $data = ScreenOpname::where('nama_obat', 'like', '%' . request('search') . '%')
+        $data = request('search') 
+            ? ScreenOpname::where('nama_obat', 'like', '%' . request('search') . '%')
                 ->orWhere('no_seri', 'like', '%' . request('search') . '%')
-                ->get();
-        } else {
-            $data = ScreenOpname::orderBy('nama_obat', 'asc')->get();
-        }
+                ->get()
+            : ScreenOpname::orderBy('nama_obat', 'asc')->get();
 
         $total_harga = Cart::sum('harga_total');
         $total_qty = Cart::sum('qty');
-
         $cart = Cart::all();
-        
 
         return view('admin_dashboard.kasir.index', compact('data', 'cart', 'total_harga', 'total_qty'));
     }
 
-    
-
-    public function create()
+    public function createtransactiondetails()
     {
-        
+        // Implementasi untuk membuat detail transaksi
     }
 
     /**
@@ -47,25 +40,24 @@ class KasirController extends Controller
      */
     public function store(Request $request)
     {
-    
-
-
+        // Implementasi untuk menyimpan resource
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($id) {
+    public function show($id)
+    {
         $data = ScreenOpname::findOrFail($id);
         return view('admin_dashboard.modal.detail', compact('data'));
     }
 
-    public function showCart($id) {
+    public function showCart($id)
+    {
         $data1 = ScreenOpname::findOrFail($id);
         $data2 = PriceList::findOrFail($id);
         $data3 = Kasir::findOrFail($id);
 
-        // dd($data1, $data2);
         return view('admin_dashboard.kasir.detail', compact('data1', 'data2', 'data3'));
     }
 
@@ -73,6 +65,10 @@ class KasirController extends Controller
 {
     // Cari data stok obat berdasarkan no_seri
     $stockItem = ScreenOpname::where('no_seri', $request->no_seri)->first();
+
+    if (!$stockItem) {
+        return redirect()->route('kasir.index')->with('error', 'Obat tidak ditemukan di stok!');
+    }
 
     // Validasi jika qty_in melebihi stok
     if ($request->qty_in > $stockItem->qty) {
@@ -85,8 +81,6 @@ class KasirController extends Controller
     if ($cartItem) {
         // Jika item sudah ada di cart, tambahkan qty dan kurangi stok
         $cartItem->qty += $request->qty_in;
-
-        // Update harga_total di cart
         $cartItem->harga_total = $cartItem->harga_Umum * $cartItem->qty;
         $cartItem->save();
     } else {
@@ -103,23 +97,24 @@ class KasirController extends Controller
         Cart::create($data);
     }
 
-    // Kurangi stok
+    // Update stok
     $stockItem->qty -= $request->qty_in;
     $stockItem->save();
 
     // Hitung total_harga dengan menjumlahkan semua harga_total di tabel Cart
-    $total_harga = Cart::sum('harga_total'); // Total semua harga_total
+    $total_harga = Cart::sum('harga_total');
 
     // Redirect ke halaman kasir dengan total_harga
-    return redirect()->route('kasir.index')->with('success', 'Item berhasil ditambahkan ke keranjang, total harga: Rp' . $total_harga);
+    return redirect()->route('kasir.index')->with('success', 'Iteam berhasil ditambahkan ke keranjang, total harga: Rp' . $total_harga);
 }
+
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        //
+        // Implementasi untuk mengedit resource
     }
 
     /**
@@ -127,12 +122,12 @@ class KasirController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        // Implementasi untuk memperbarui resource
     }
 
     public function paymentCash(Request $request)
     {
-        
+        // Implementasi untuk pembayaran tunai
     }
 
     /**
@@ -144,7 +139,7 @@ class KasirController extends Controller
     $item = Cart::findOrFail($id);
 
     // Cari data stok obat berdasarkan no_seri di tabel Obat
-    $stockItem = ScreenOpname ::where('no_seri', $item->no_seri)->first();
+    $stockItem = ScreenOpname::where('no_seri', $item->no_seri)->first();
 
     // Validasi jika stok tidak ditemukan
     if (!$stockItem) {
@@ -161,20 +156,94 @@ class KasirController extends Controller
     return redirect()->route('kasir.index')->with('success', 'Item berhasil dihapus dari keranjang dan stok diperbarui!');
 }
 
+
     public function qrcode()
     {
         return view('admin_dashboard.kasir.qrcode');
     }
 
-    public function paymentdone()
-    {
-        return view('admin_dashboard.kasir.paymentsuccess');
+    public function paymentdone(Request $request)
+{
+    $request->validate([
+        'tunai_amount' => 'required|numeric|min:' . Cart::sum('harga_total')
+    ]);
+
+    $tunai_amount = $request->input('tunai_amount');
+    $total_harga = Cart::sum('harga_total');
+
+    // Ambil urutan terakhir dari transaksi
+    $lastId = DB::table('transaction_details')->max('id') ?? 0;
+    $nextNumber = str_pad($lastId + 1, 4, '0', STR_PAD_LEFT);
+    $tanggal = now()->format('dm');
+    $tahun = now()->format('Y');
+    $transaction_id = "TRX{$nextNumber}-{$tanggal}-{$tahun}";
+
+    // Simpan transaksi dari Cart ke TransactionDetail
+    $cartItems = Cart::all();
+
+    foreach ($cartItems as $item) {
+        TransactionDetails::create([
+            'transaction_id' => $transaction_id,
+            'no_seri' => $item->no_seri,
+            'nama_obat' => $item->nama_obat,
+            'harga_Umum' => $item->harga_Umum,
+            'qty' => $item->qty,
+            'total_qty' => $item->qty,
+            'harga_total' => $item->harga_total,
+            'exp' => $item->exp,
+        ]);
+
+        $stok = ScreenOpname::where('no_seri', $item->no_seri)->first();
+        if ($stok) {
+            if ($stok->qty < $item->qty) {
+                return redirect()->route('kasir.index')->with('error', 'Stok tidak cukup untuk menyelesaikan transaksi.');
+            }
+            // Tambahkan pengeluaran
+            $stok->pengeluaran += $item->qty;
+            $stok->save();
+        }
+
+        // Hapus dari Cart
+        $item->delete();
     }
 
-    public function printstruk()
+    session([
+        'tunai_amount' => $tunai_amount,
+        'transaction_id' => $transaction_id,
+    ]);
+
+    return view('admin_dashboard.kasir.paymentsuccess', compact('total_harga', 'tunai_amount'));
+}
+
+
+public function printstruk(Request $request)
+{
+    $transaction_id = session('transaction_id');
+
+    $item = TransactionDetails::where('transaction_id', $transaction_id)->get();
+    $total_harga = $item->sum('harga_total');
+    $tunai_amount = session('tunai_amount');
+    $kembalian = $tunai_amount - $total_harga;
+
+    return view('admin_dashboard.kasir.printerstruk', compact('item', 'total_harga', 'tunai_amount', 'kembalian'));
+}
+
+    public function paymentdoneqris()
     {
-        $item = Cart::all(); 
-        $total_harga = Cart::sum('harga_total');
-        return view('admin_dashboard.kasir.printerstruk', compact('item', 'total_harga'));
+
+        return view('admin_dashboard.kasir.paymentsuccessqris');
+    }
+
+    public function printstrukqris(Request $request)
+{
+    $item = Cart::all();
+    $total_harga = Cart::sum('harga_total');
+
+    return view('admin_dashboard.kasir.printerstrukqris', compact('item', 'total_harga'));
+}
+
+    public function aneh()
+    {
+        return view('admin_dashboard.kasir.paymentsuccessqris');
     }
 }

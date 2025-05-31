@@ -7,6 +7,8 @@ use App\Http\Controllers\KasirController;
 use App\Http\Controllers\ModalController;
 use App\Http\Controllers\PricelistController;
 use App\Http\Controllers\ScreenopnameController;
+use App\Http\Controllers\TransactionDetail;
+use App\Http\Controllers\TransactionDetailController;
 use App\Models\ScreenOpname;
 use Illuminate\Support\Facades\Route;
 
@@ -73,8 +75,15 @@ Route::put('/admin_dashboard/daftar_harga/edit/{id}', [PricelistController::clas
 // kasir
 Route::get('/admin_dashboard/kasir', [KasirController::class, 'index'])->name('kasir.index');
 Route::get('/admin_dashboard/kasir/qrcode', [KasirController::class, 'qrcode'])->name('kasir.qrcode');
-Route::get('/admin_dashboard/kasir/paymentdone', [KasirController::class, 'paymentdone'])->name('kasir.paymentdone');
-Route::get('/admin_dashboard/kasir/printstruk/{id}', [KasirController::class, 'printstruk'])->name('kasir.printstruk');
+
+Route::post('/admin_dashboard/kasir/paymentdone', [KasirController::class, 'paymentdone'])->name('kasir.paymentdone');
+Route::get('/admin_dashboard/kasir/printstruk', [KasirController::class, 'printstruk'])->name('kasir.printstruk');
+
+Route::post('/admin_dashboard/kasir/aneh', [KasirController::class, 'aneh'])->name('kasir.aneh');
+
+Route::post('/admin_dashboard/kasir/paymentdoneqris', [KasirController::class, 'paymentdoneqris'])->name('kasir.paymentdoneqris');
+Route::get('/admin_dashboard/kasir/printstrukqris', [KasirController::class, 'printstrukqris'])->name('kasir.printstrukqris');
+
 Route::get('/admin_dashboard/kasir/{id}', [KasirController::class, 'showCart'])->name('modal.detail');
 Route::post('/admin_dashboard/kasir/{id}', [KasirController::class, 'storeCart'])->name('modal.addtocart');
 
@@ -83,6 +92,11 @@ Route::delete('/admin_dashboard/kasir/{id}', [KasirController::class, 'destroy']
 
 //payment
 Route::post('/admin_dashboard/kasir/payment', [KasirController::class, 'paymentCash'])->name('process.paymentcash');
+
+//transaction detail
+Route::get('/admin_dashboard/transactionDetail', [TransactionDetailController::class, 'index'])->name('transactiondetail');
+
+Route::get('/admin_dashboard/transactionDetail/printstruk/{transaction_id}',[TransactionDetailController::class, 'printStruk'])->name('printstruk');
 
 
 

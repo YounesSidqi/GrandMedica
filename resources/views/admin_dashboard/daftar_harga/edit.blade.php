@@ -22,7 +22,7 @@
   
   <!-- Judul Edit Screen Opname -->
   <div class="text-center my-6">
-    <h1 class="text-2xl font-bold">Edit Screen Opname</h1>
+    <h1 class="text-2xl font-bold">Edit Harga</h1>
   </div>
 
   <!-- Form Input -->
